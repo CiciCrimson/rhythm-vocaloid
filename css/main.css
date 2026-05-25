@@ -1,4 +1,4 @@
-/* main.css - 选歌页全局样式（白色主题） */
+/* main.css - 选歌页全局样式（深色主题） */
 
 * {
   margin: 0;
@@ -10,8 +10,8 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #f5f5f5;
-  color: #333;
+  background: #0d0d1a;
+  color: #fff;
   font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
@@ -24,7 +24,7 @@ html, body {
   justify-content: space-between;
   height: 100vh;
   padding: 20px;
-  background: radial-gradient(ellipse at top, #e8f4ff 0%, #f5f5f5 70%);
+  background: radial-gradient(ellipse at top, #1a1a3e 0%, #0d0d1a 70%);
 }
 
 /* 标题区 */
@@ -36,7 +36,7 @@ html, body {
 .game-title {
   font-size: clamp(28px, 5vw, 48px);
   font-weight: 900;
-  background: linear-gradient(135deg, #0ea5e9, #a78bfa, #f472b6);
+  background: linear-gradient(135deg, #16d5b9, #a78bfa, #f472b6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -46,7 +46,7 @@ html, body {
 
 .game-subtitle {
   font-size: clamp(12px, 2vw, 16px);
-  color: #888;
+  color: rgba(255, 255, 255, 0.5);
   letter-spacing: 6px;
   margin-top: 4px;
 }
@@ -78,7 +78,7 @@ html, body {
   cursor: pointer;
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .song-card:hover,
@@ -87,16 +87,16 @@ html, body {
 }
 
 .song-card.available {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .song-card.available:hover {
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px var(--card-color, rgba(22,213,185,0.3));
 }
 
 .song-card.locked {
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 .song-card.locked:hover {
@@ -107,7 +107,7 @@ html, body {
 .card-bg {
   position: absolute;
   inset: 0;
-  background: var(--card-bg, #ffffff);
+  background: var(--card-bg, #1a1a2e);
 }
 
 .card-bg::after {
@@ -116,10 +116,10 @@ html, body {
   inset: 0;
   background: linear-gradient(
     135deg,
-    var(--card-color, #0ea5e9) 0%,
+    var(--card-color, #16d5b9) 0%,
     transparent 60%
   );
-  opacity: 0.08;
+  opacity: 0.15;
 }
 
 /* 卡片内容 */
@@ -132,7 +132,7 @@ html, body {
   justify-content: flex-end;
   height: 100%;
   padding: 16px;
-  background: linear-gradient(to top, rgba(255,255,255,0.95) 0%, transparent 50%);
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
 }
 
 /* 歌曲图标（占位） */
@@ -148,14 +148,14 @@ html, body {
 .card-title {
   font-size: clamp(16px, 2.5vw, 22px);
   font-weight: 700;
-  color: #222;
+  color: #fff;
   text-align: center;
   margin-bottom: 4px;
 }
 
 .card-artist {
   font-size: clamp(11px, 1.5vw, 14px);
-  color: #666;
+  color: rgba(255, 255, 255, 0.6);
   text-align: center;
 }
 
@@ -165,14 +165,14 @@ html, body {
   left: 0;
   right: 0;
   height: 4px;
-  background: var(--card-color, #0ea5e9);
+  background: var(--card-color, #16d5b9);
 }
 
 /* 锁定遮罩 */
 .card-lock-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -187,7 +187,7 @@ html, body {
 
 .lock-text {
   font-size: 13px;
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* 底部提示 */
@@ -198,7 +198,7 @@ html, body {
 
 .footer-hint p {
   font-size: clamp(11px, 1.5vw, 14px);
-  color: #aaa;
+  color: rgba(255, 255, 255, 0.3);
   letter-spacing: 1px;
 }
 
