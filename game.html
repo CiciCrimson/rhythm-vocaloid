@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="screen-orientation" content="landscape">
+  <title>节奏术力口 - 游戏</title>
+  <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+  <!-- 加载界面 -->
+  <div id="loadingScreen" class="screen active">
+    <div class="loading-content">
+      <h2 id="loadingSongTitle">加载中...</h2>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="loadingBar"></div>
+      </div>
+      <p id="loadingText">正在加载音频...</p>
+    </div>
+  </div>
+
+  <!-- 开始界面（解锁 AudioContext） -->
+  <div id="startScreen" class="screen">
+    <div class="start-content">
+      <h2 id="startSongTitle"></h2>
+      <p id="startArtist"></p>
+      <button id="startBtn" class="btn-start">点击开始</button>
+      <p class="hint-text">点击屏幕任意位置收集音符</p>
+    </div>
+  </div>
+
+  <!-- 游戏主画布 -->
+  <div id="gameScreen" class="screen">
+    <canvas id="gameCanvas"></canvas>
+    <!-- 暂停按钮 -->
+    <button id="pauseBtn" class="btn-pause">⏸</button>
+  </div>
+
+  <!-- 暂停界面 -->
+  <div id="pauseScreen" class="screen">
+    <div class="pause-content">
+      <h2>已暂停</h2>
+      <button id="resumeBtn" class="btn-menu">继续</button>
+      <button id="restartBtn" class="btn-menu">重新开始</button>
+      <button id="quitBtn" class="btn-menu">返回选歌</button>
+    </div>
+  </div>
+
+  <!-- 结算界面 -->
+  <div id="resultsScreen" class="screen">
+    <!-- 由 results.js 动态填充 -->
+  </div>
+
+  <script type="module" src="js/game.js"></script>
+</body>
+</html>

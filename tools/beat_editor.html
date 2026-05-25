@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>节拍编辑器 - 节奏术力口</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0d0d1a;
+      color: #fff;
+      font-family: monospace;
+      padding: 20px;
+    }
+    h1 { color: #16d5b9; margin-bottom: 20px; }
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    input[type="file"], input[type="text"] {
+      background: #1a1a2e;
+      border: 1px solid #333;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 4px;
+    }
+    button {
+      padding: 8px 16px;
+      background: #16d5b9;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover { background: #0fb8a0; }
+    button.danger { background: #f87171; }
+    #waveform {
+      width: 100%;
+      height: 120px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 4px;
+      cursor: crosshair;
+      margin-bottom: 8px;
+      position: relative;
+    }
+    #timeline {
+      width: 100%;
+      height: 60px;
+      background: #0a0a1a;
+      border: 1px solid #333;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .note-marker {
+      position: absolute;
+      top: 0;
+      width: 2px;
+      height: 100%;
+      background: #16d5b9;
+      cursor: pointer;
+    }
+    .note-marker.golden { background: #ffd700; }
+    .note-marker.special { background: #f472b6; }
+    .note-marker:hover { width: 4px; }
+    #playhead {
+      position: absolute;
+      top: 0;
+      width: 2px;
+      height: 100%;
+      background: #fff;
+      pointer-events: none;
+    }
+    #noteList {
+      max-height: 300px;
+      overflow-y: auto;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 8px;
+      margin-bottom: 16px;
+      font-size: 12px;
+    }
+    .note-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 4px;
+      border-bottom: 1px solid #222;
+    }
+    .note-row:hover { background: #1a1a2e; }
+    .note-time { color: #16d5b9; width: 70px; }
+    .note-type { width: 70px; }
+    .note-type.golden { color: #ffd700; }
+    .note-type.special { color: #f472b6; }
+    .note-type.normal { color: #16d5b9; }
+    #status {
+      color: #a0a0c0;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    #jsonOutput {
+      width: 100%;
+      height: 200px;
+      background: #111;
+      border: 1px solid #333;
+      color: #16d5b9;
+      font-family: monospace;
+      font-size: 12px;
+      padding: 8px;
+      border-radius: 4px;
+      resize: vertical;
+    }
+    .type-btn { padding: 4px 10px; font-size: 12px; }
+    .type-btn.active { outline: 2px solid #fff; }
+  </style>
+</head>
+<body>
+  <h1>🎵 节拍编辑器 - 节奏术力口</h1>
+  <p style="color:#a0a0c0; margin-bottom:16px; font-size:13px;">
+    加载音频后，点击时间轴添加节拍点。按空格键播放/暂停，按 T 键在当前播放位置添加节拍。
+  </p>
+
+  <div class="controls">
+    <input type="file" id="audioFile" accept="audio/*">
+    <input type="text" id="songIdInput" placeholder="歌曲 ID (如 levan_polkka)" style="width:200px">
+    <button onclick="loadAudio()">加载音频</button>
+    <button onclick="togglePlay()">▶ 播放/暂停</button>
+    <button onclick="clearNotes()" class="danger">清空节拍</button>
+    <button onclick="exportJSON()">导出 JSON</button>
+  </div>
+
+  <div class="controls">
+    <span>节拍类型：</span>
+    <button class="type-btn active" id="btn-normal" onclick="setType('normal')">普通</button>
+    <button class="type-btn" id="btn-golden" onclick="setType('golden')">Golden ⭐</button>
+    <button class="type-btn" id="btn-special" onclick="setType('special')">Special 💎</button>
+    <span style="color:#a0a0c0; font-size:12px; margin-left:8px">当前偏移: </span>
+    <input type="number" id="offsetInput" value="0" step="0.01" style="width:80px" onchange="updateOffset()">
+    <span style="color:#a0a0c0; font-size:12px">秒</span>
+  </div>
+
+  <div id="status">请加载音频文件</div>
+  <canvas id="waveform"></canvas>
+  <div id="timeline">
+    <div id="playhead"></div>
+  </div>
+
+  <div id="noteList">
+    <div style="color:#666; padding:8px">暂无节拍点</div>
+  </div>
+
+  <textarea id="jsonOutput" placeholder="导出的 JSON 将显示在这里..."></textarea>
+
+  <script>
+    let audioCtx = null;
+    let audioBuffer = null;
+    let source = null;
+    let startTime = 0;
+    let pauseTime = 0;
+    let isPlaying = false;
+    let notes = [];
+    let currentType = 'normal';
+    let globalOffset = 0;
+    let duration = 0;
+    let animFrame = null;
+
+    const timeline = document.getElementById('timeline');
+    const playhead = document.getElementById('playhead');
+    const waveformCanvas = document.getElementById('waveform');
+    const waveCtx = waveformCanvas.getContext('2d');
+
+    function getCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      return audioCtx;
+    }
+
+    async function loadAudio() {
+      const file = document.getElementById('audioFile').files[0];
+      if (!file) { alert('请先选择音频文件'); return; }
+
+      document.getElementById('status').textContent = '正在加载...';
+      const ctx = getCtx();
+      const arrayBuffer = await file.arrayBuffer();
+      audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+      duration = audioBuffer.duration;
+
+      document.getElementById('status').textContent =
+        `已加载: ${file.name} | 时长: ${duration.toFixed(2)}s`;
+
+      drawWaveform();
+      renderTimeline();
+    }
+
+    function drawWaveform() {
+      if (!audioBuffer) return;
+      const W = waveformCanvas.offsetWidth;
+      const H = 120;
+      waveformCanvas.width = W;
+      waveformCanvas.height = H;
+
+      const data = audioBuffer.getChannelData(0);
+      const step = Math.ceil(data.length / W);
+      const amp = H / 2;
+
+      waveCtx.fillStyle = '#111';
+      waveCtx.fillRect(0, 0, W, H);
+      waveCtx.strokeStyle = '#16d5b9';
+      waveCtx.lineWidth = 1;
+      waveCtx.beginPath();
+
+      for (let i = 0; i < W; i++) {
+        let min = 1, max = -1;
+        for (let j = 0; j < step; j++) {
+          const v = data[i * step + j] || 0;
+          if (v < min) min = v;
+          if (v > max) max = v;
+        }
+        waveCtx.moveTo(i, amp + min * amp);
+        waveCtx.lineTo(i, amp + max * amp);
+      }
+      waveCtx.stroke();
+    }
+
+    function renderTimeline() {
+      // 清除旧标记
+      const existing = timeline.querySelectorAll('.note-marker');
+      existing.forEach(e => e.remove());
+
+      const W = timeline.offsetWidth;
+      notes.forEach((note, idx) => {
+        const x = (note.time / duration) * W;
+        const marker = document.createElement('div');
+        marker.className = `note-marker ${note.type}`;
+        marker.style.left = `${x}px`;
+        marker.title = `${note.time.toFixed(3)}s (${note.type})`;
+        marker.onclick = (e) => {
+          e.stopPropagation();
+          if (confirm(`删除 ${note.time.toFixed(3)}s 处的节拍？`)) {
+            notes.splice(idx, 1);
+            renderTimeline();
+            renderNoteList();
+          }
+        };
+        timeline.appendChild(marker);
+      });
+    }
+
+    function renderNoteList() {
+      const list = document.getElementById('noteList');
+      if (notes.length === 0) {
+        list.innerHTML = '<div style="color:#666; padding:8px">暂无节拍点</div>';
+        return;
+      }
+      list.innerHTML = notes.map((n, i) =>
+        `<div class="note-row">
+          <span class="note-time">${n.time.toFixed(3)}s</span>
+          <span class="note-type ${n.type}">${n.type}</span>
+          <span style="color:#666">lane:${n.lane}</span>
+          <button onclick="deleteNote(${i})" style="padding:2px 6px; font-size:11px; background:#f87171; margin-left:auto">删</button>
+        </div>`
+      ).join('');
+    }
+
+    function deleteNote(idx) {
+      notes.splice(idx, 1);
+      renderTimeline();
+      renderNoteList();
+    }
+
+    function addNoteAtTime(time) {
+      const laneCounter = notes.length;
+      notes.push({
+        time: parseFloat(time.toFixed(4)),
+        type: currentType,
+        lane: (laneCounter % 2) + 1
+      });
+      notes.sort((a, b) => a.time - b.time);
+      renderTimeline();
+      renderNoteList();
+    }
+
+    // 点击时间轴添加节拍
+    timeline.addEventListener('click', (e) => {
+      if (!audioBuffer) return;
+      const rect = timeline.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const time = (x / rect.width) * duration;
+      addNoteAtTime(time);
+    });
+
+    function getCurrentTime() {
+      if (!isPlaying) return pauseTime;
+      return getCtx().currentTime - startTime;
+    }
+
+    function togglePlay() {
+      if (!audioBuffer) { alert('请先加载音频'); return; }
+      const ctx = getCtx();
+      if (ctx.state === 'suspended') ctx.resume();
+
+      if (isPlaying) {
+        pauseTime = getCurrentTime();
+        source?.stop();
+        source = null;
+        isPlaying = false;
+        cancelAnimationFrame(animFrame);
+      } else {
+        source = ctx.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(ctx.destination);
+        startTime = ctx.currentTime - pauseTime;
+        source.start(0, pauseTime);
+        isPlaying = true;
+        source.onended = () => { isPlaying = false; pauseTime = 0; };
+        updatePlayhead();
+      }
+    }
+
+    function updatePlayhead() {
+      if (!isPlaying) return;
+      const t = getCurrentTime();
+      const pct = Math.min(t / duration, 1);
+      playhead.style.left = `${pct * timeline.offsetWidth}px`;
+      document.getElementById('status').textContent =
+        `播放中: ${t.toFixed(2)}s / ${duration.toFixed(2)}s | 节拍数: ${notes.length}`;
+      animFrame = requestAnimationFrame(updatePlayhead);
+    }
+
+    // 键盘快捷键
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+      if (e.code === 'KeyT') { addNoteAtTime(getCurrentTime()); }
+    });
+
+    function setType(type) {
+      currentType = type;
+      document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`btn-${type}`).classList.add('active');
+    }
+
+    function updateOffset() {
+      globalOffset = parseFloat(document.getElementById('offsetInput').value) || 0;
+    }
+
+    function clearNotes() {
+      if (confirm('确定清空所有节拍？')) {
+        notes = [];
+        renderTimeline();
+        renderNoteList();
+      }
+    }
+
+    function exportJSON() {
+      const songId = document.getElementById('songIdInput').value || 'unknown';
+      const config = {
+        songId,
+        title: songId,
+        artist: '',
+        bpm: 120,
+        audioSrc: `assets/audio/${songId}.mp3`,
+        offset: globalOffset,
+        duration: parseFloat(duration.toFixed(2)),
+        notes: notes.map(n => ({ ...n })),
+        backgroundShiftPoints: [],
+        characterSwitchPoints: []
+      };
+      document.getElementById('jsonOutput').value = JSON.stringify(config, null, 2);
+
+      // 自动下载
+      const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${songId}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // 窗口大小变化时重绘
+    window.addEventListener('resize', () => {
+      drawWaveform();
+      renderTimeline();
+    });
+  </script>
+</body>
+</html>

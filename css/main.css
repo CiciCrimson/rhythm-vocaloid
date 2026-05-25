@@ -1,0 +1,216 @@
+/* main.css - 选歌页全局样式（白色主题） */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #f5f5f5;
+  color: #333;
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100vh;
+  padding: 20px;
+  background: radial-gradient(ellipse at top, #e8f4ff 0%, #f5f5f5 70%);
+}
+
+/* 标题区 */
+.title-area {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.game-title {
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 900;
+  background: linear-gradient(135deg, #0ea5e9, #a78bfa, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 4px;
+  text-shadow: none;
+}
+
+.game-subtitle {
+  font-size: clamp(12px, 2vw, 16px);
+  color: #888;
+  letter-spacing: 6px;
+  margin-top: 4px;
+}
+
+/* 选歌区 */
+.song-select {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.song-cards {
+  display: flex;
+  gap: clamp(12px, 3vw, 24px);
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 10px;
+}
+
+/* 歌曲卡片 */
+.song-card {
+  position: relative;
+  width: clamp(180px, 25vw, 260px);
+  height: clamp(220px, 30vh, 320px);
+  border-radius: 16px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.song-card:hover,
+.song-card:active {
+  transform: translateY(-6px) scale(1.02);
+}
+
+.song-card.available {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.song-card.available:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+
+.song-card.locked {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.song-card.locked:hover {
+  transform: none;
+}
+
+/* 卡片背景渐变 */
+.card-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--card-bg, #ffffff);
+}
+
+.card-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    var(--card-color, #0ea5e9) 0%,
+    transparent 60%
+  );
+  opacity: 0.08;
+}
+
+/* 卡片内容 */
+.card-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  padding: 16px;
+  background: linear-gradient(to top, rgba(255,255,255,0.95) 0%, transparent 50%);
+}
+
+/* 歌曲图标（占位） */
+.card-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  font-size: clamp(48px, 8vw, 72px);
+  opacity: 0.85;
+}
+
+.card-title {
+  font-size: clamp(16px, 2.5vw, 22px);
+  font-weight: 700;
+  color: #222;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.card-artist {
+  font-size: clamp(11px, 1.5vw, 14px);
+  color: #666;
+  text-align: center;
+}
+
+.card-color-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--card-color, #0ea5e9);
+}
+
+/* 锁定遮罩 */
+.card-lock-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.lock-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.lock-text {
+  font-size: 13px;
+  color: #666;
+}
+
+/* 底部提示 */
+.footer-hint {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.footer-hint p {
+  font-size: clamp(11px, 1.5vw, 14px);
+  color: #aaa;
+  letter-spacing: 1px;
+}
+
+/* 响应式：竖屏手机 */
+@media (max-width: 600px) {
+  .song-cards {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .song-card {
+    width: 140px;
+    height: 180px;
+  }
+}
