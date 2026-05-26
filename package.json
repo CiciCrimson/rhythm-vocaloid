@@ -1,0 +1,27 @@
+{
+	"name": "rhythm-vocaloid",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"format": "biome format --write .",
+		"lint": "biome lint",
+		"typecheck": "bunx --bun tsc --noEmit"
+	},
+	"dependencies": {
+		"@pixi/react": "^8.0.0",
+		"pixi.js": "^8.8.1",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.15",
+		"@types/react": "^19.0.10",
+		"@types/react-dom": "^19.0.4",
+		"@vitejs/plugin-react": "^6.0.2",
+		"typescript": "~6.0.3",
+		"vite": "^8.0.14"
+	}
+}

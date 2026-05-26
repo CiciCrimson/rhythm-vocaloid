@@ -1,375 +1,408 @@
 /* game.css - 游戏页面样式 */
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #000;
-  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
+html,
+body {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	background: #000;
+	font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+	-webkit-tap-highlight-color: transparent;
+	user-select: none;
 }
 
 /* 通用屏幕层 */
 .screen {
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
+	position: fixed;
+	inset: 0;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	z-index: 10;
 }
 
 .screen.active {
-  display: flex;
+	display: flex;
 }
 
 /* 加载界面 */
 #loadingScreen {
-  background: #0d0d1a;
-  flex-direction: column;
-  gap: 20px;
+	background: #0d0d1a;
+	flex-direction: column;
+	gap: 20px;
 }
 
 .loading-content {
-  text-align: center;
-  color: #fff;
+	text-align: center;
+	color: #fff;
 }
 
 .loading-content h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #16d5b9;
+	font-size: 24px;
+	margin-bottom: 20px;
+	color: #16d5b9;
 }
 
 .progress-bar-wrap {
-  width: 300px;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  overflow: hidden;
-  margin: 0 auto 12px;
+	width: 300px;
+	height: 8px;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 4px;
+	overflow: hidden;
+	margin: 0 auto 12px;
 }
 
 .progress-bar {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #16d5b9, #a78bfa);
-  border-radius: 4px;
-  transition: width 0.3s ease;
+	height: 100%;
+	width: 0%;
+	background: linear-gradient(90deg, #16d5b9, #a78bfa);
+	border-radius: 4px;
+	transition: width 0.3s ease;
 }
 
 #loadingText {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.5);
+	font-size: 14px;
+	color: rgba(255, 255, 255, 0.5);
 }
 
 /* 开始界面 */
 #startScreen {
-  background: rgba(0, 0, 0, 0.85);
-  flex-direction: column;
-  gap: 16px;
+	background: rgba(0, 0, 0, 0.85);
+	flex-direction: column;
+	gap: 16px;
 }
 
 .start-content {
-  text-align: center;
-  color: #fff;
+	text-align: center;
+	color: #fff;
 }
 
 .start-content h2 {
-  font-size: clamp(24px, 4vw, 36px);
-  font-weight: 700;
-  color: #16d5b9;
-  margin-bottom: 8px;
+	font-size: clamp(24px, 4vw, 36px);
+	font-weight: 700;
+	color: #16d5b9;
+	margin-bottom: 8px;
 }
 
 .start-content p {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 32px;
+	font-size: 16px;
+	color: rgba(255, 255, 255, 0.6);
+	margin-bottom: 32px;
 }
 
 .btn-start {
-  display: block;
-  margin: 0 auto 16px;
-  padding: 16px 48px;
-  font-size: 20px;
-  font-weight: 700;
-  color: #000;
-  background: linear-gradient(135deg, #16d5b9, #a78bfa);
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 4px 20px rgba(22, 213, 185, 0.4);
+	display: block;
+	margin: 0 auto 16px;
+	padding: 16px 48px;
+	font-size: 20px;
+	font-weight: 700;
+	color: #000;
+	background: linear-gradient(135deg, #16d5b9, #a78bfa);
+	border: none;
+	border-radius: 50px;
+	cursor: pointer;
+	transition:
+		transform 0.15s ease,
+		box-shadow 0.15s ease;
+	box-shadow: 0 4px 20px rgba(22, 213, 185, 0.4);
 }
 
 .btn-start:hover,
 .btn-start:active {
-  transform: scale(1.05);
-  box-shadow: 0 8px 32px rgba(22, 213, 185, 0.6);
+	transform: scale(1.05);
+	box-shadow: 0 8px 32px rgba(22, 213, 185, 0.6);
 }
 
 .hint-text {
-  font-size: 13px !important;
-  color: rgba(255, 255, 255, 0.4) !important;
-  margin-bottom: 0 !important;
+	font-size: 13px !important;
+	color: rgba(255, 255, 255, 0.4) !important;
+	margin-bottom: 0 !important;
 }
 
 /* 游戏画布 */
 #gameScreen {
-  background: #000;
-  z-index: 1;
+	background: #000;
+	z-index: 1;
 }
 
 #gameCanvas {
-  display: block;
-  /* 尺寸由 JS 动态设置 */
+	display: block;
+	/* 尺寸由 JS 动态设置 */
 }
 
 /* 暂停按钮 */
 .btn-pause {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 44px;
-  height: 44px;
-  font-size: 20px;
-  background: rgba(0, 0, 0, 0.5);
-  color: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 5;
-  transition: background 0.15s;
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	width: 44px;
+	height: 44px;
+	font-size: 20px;
+	background: rgba(0, 0, 0, 0.5);
+	color: rgba(255, 255, 255, 0.7);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 50%;
+	cursor: pointer;
+	z-index: 5;
+	transition: background 0.15s;
 }
 
 .btn-pause:hover {
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
+	background: rgba(0, 0, 0, 0.8);
+	color: #fff;
 }
 
 /* 暂停界面 */
 #pauseScreen {
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(8px);
-  flex-direction: column;
-  gap: 16px;
+	background: rgba(0, 0, 0, 0.8);
+	backdrop-filter: blur(8px);
+	flex-direction: column;
+	gap: 16px;
 }
 
 .pause-content {
-  text-align: center;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+	text-align: center;
+	color: #fff;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 12px;
 }
 
 .pause-content h2 {
-  font-size: 32px;
-  margin-bottom: 8px;
-  color: #a78bfa;
+	font-size: 32px;
+	margin-bottom: 8px;
+	color: #a78bfa;
 }
 
 .btn-menu {
-  width: 200px;
-  padding: 12px 24px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+	width: 200px;
+	padding: 12px 24px;
+	font-size: 16px;
+	font-weight: 600;
+	color: #fff;
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 8px;
+	cursor: pointer;
+	transition:
+		background 0.15s,
+		transform 0.1s;
 }
 
 .btn-menu:hover,
 .btn-menu:active {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.02);
+	background: rgba(255, 255, 255, 0.2);
+	transform: scale(1.02);
 }
 
 /* 结算界面 */
 #resultsScreen {
-  background: #0d0d1a;
-  flex-direction: column;
-  overflow-y: auto;
+	background: #0d0d1a;
+	flex-direction: column;
+	overflow-y: auto;
 }
 
 .results-content {
-  text-align: center;
-  color: #fff;
-  padding: 30px 20px;
-  max-width: 500px;
-  width: 100%;
+	text-align: center;
+	color: #fff;
+	padding: 30px 20px;
+	max-width: 500px;
+	width: 100%;
 }
 
 .results-title {
-  font-size: 14px;
-  letter-spacing: 4px;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 8px;
+	font-size: 14px;
+	letter-spacing: 4px;
+	color: rgba(255, 255, 255, 0.5);
+	margin-bottom: 8px;
 }
 
 .results-song-name {
-  font-size: clamp(20px, 4vw, 28px);
-  font-weight: 700;
-  color: #16d5b9;
-  margin-bottom: 24px;
+	font-size: clamp(20px, 4vw, 28px);
+	font-weight: 700;
+	color: #16d5b9;
+	margin-bottom: 24px;
 }
 
 .results-grade {
-  font-size: clamp(80px, 15vw, 120px);
-  font-weight: 900;
-  line-height: 1;
-  margin-bottom: 16px;
+	font-size: clamp(80px, 15vw, 120px);
+	font-weight: 900;
+	line-height: 1;
+	margin-bottom: 16px;
 }
 
-.grade-S { color: #ffd700; text-shadow: 0 0 30px rgba(255, 215, 0, 0.6); }
-.grade-A { color: #16d5b9; text-shadow: 0 0 30px rgba(22, 213, 185, 0.6); }
-.grade-B { color: #a78bfa; text-shadow: 0 0 30px rgba(167, 139, 250, 0.6); }
-.grade-C { color: #f472b6; text-shadow: 0 0 30px rgba(244, 114, 182, 0.6); }
+.grade-S {
+	color: #ffd700;
+	text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+}
+.grade-A {
+	color: #16d5b9;
+	text-shadow: 0 0 30px rgba(22, 213, 185, 0.6);
+}
+.grade-B {
+	color: #a78bfa;
+	text-shadow: 0 0 30px rgba(167, 139, 250, 0.6);
+}
+.grade-C {
+	color: #f472b6;
+	text-shadow: 0 0 30px rgba(244, 114, 182, 0.6);
+}
 
 .results-score {
-  font-size: clamp(28px, 5vw, 40px);
-  font-weight: 700;
-  margin-bottom: 24px;
+	font-size: clamp(28px, 5vw, 40px);
+	font-weight: 700;
+	margin-bottom: 24px;
 }
 
 .results-stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 24px;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 12px;
+	margin-bottom: 24px;
 }
 
 .stat-item {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  padding: 12px;
+	background: rgba(255, 255, 255, 0.05);
+	border-radius: 8px;
+	padding: 12px;
 }
 
 .stat-label {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 4px;
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.5);
+	margin-bottom: 4px;
 }
 
 .stat-value {
-  font-size: 22px;
-  font-weight: 700;
+	font-size: 22px;
+	font-weight: 700;
 }
 
-.stat-perfect { color: #ffd700; }
-.stat-great { color: #16d5b9; }
-.stat-good { color: #a78bfa; }
-.stat-miss { color: #f87171; }
+.stat-perfect {
+	color: #ffd700;
+}
+.stat-great {
+	color: #16d5b9;
+}
+.stat-good {
+	color: #a78bfa;
+}
+.stat-miss {
+	color: #f87171;
+}
 
 .results-combo {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 32px;
+	font-size: 16px;
+	color: rgba(255, 255, 255, 0.7);
+	margin-bottom: 32px;
 }
 
 .results-combo span {
-  color: #ffd700;
-  font-weight: 700;
-  font-size: 20px;
+	color: #ffd700;
+	font-weight: 700;
+	font-size: 20px;
 }
 
 .results-buttons {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	flex-wrap: wrap;
 }
 
 .btn-result {
-  padding: 12px 28px;
-  font-size: 15px;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.1s, box-shadow 0.1s;
-  border: none;
+	padding: 12px 28px;
+	font-size: 15px;
+	font-weight: 600;
+	border-radius: 8px;
+	cursor: pointer;
+	transition:
+		transform 0.1s,
+		box-shadow 0.1s;
+	border: none;
 }
 
 .btn-result:active {
-  transform: scale(0.97);
+	transform: scale(0.97);
 }
 
 .btn-retry {
-  background: linear-gradient(135deg, #16d5b9, #a78bfa);
-  color: #000;
-  box-shadow: 0 4px 16px rgba(22, 213, 185, 0.3);
+	background: linear-gradient(135deg, #16d5b9, #a78bfa);
+	color: #000;
+	box-shadow: 0 4px 16px rgba(22, 213, 185, 0.3);
 }
 
 .btn-back {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+	background: rgba(255, 255, 255, 0.1);
+	color: #fff;
+	border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* 移动端安全区 */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
-  body {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
+	body {
+		padding-bottom: env(safe-area-inset-bottom);
+	}
 }
 
 /* 横屏提示遮罩 */
 #orientationWarning {
-  position: fixed;
-  inset: 0;
-  background: #0d0d1a;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  flex-direction: column;
-  gap: 20px;
-  color: #fff;
-  text-align: center;
-  padding: 20px;
+	position: fixed;
+	inset: 0;
+	background: #0d0d1a;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	z-index: 9999;
+	flex-direction: column;
+	gap: 20px;
+	color: #fff;
+	text-align: center;
+	padding: 20px;
 }
 
 #orientationWarning h2 {
-  font-size: 24px;
-  color: #16d5b9;
+	font-size: 24px;
+	color: #16d5b9;
 }
 
 #orientationWarning p {
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.6);
-  line-height: 1.6;
+	font-size: 15px;
+	color: rgba(255, 255, 255, 0.6);
+	line-height: 1.6;
 }
 
 .rotate-icon {
-  font-size: 72px;
-  animation: rotateHint 2s infinite ease-in-out;
-  display: block;
+	font-size: 72px;
+	animation: rotateHint 2s infinite ease-in-out;
+	display: block;
 }
 
 @keyframes rotateHint {
-  0%, 100% { transform: rotate(0deg); }
-  40%, 60% { transform: rotate(90deg); }
+	0%,
+	100% {
+		transform: rotate(0deg);
+	}
+	40%,
+	60% {
+		transform: rotate(90deg);
+	}
 }
 
 /* 竖屏时显示提示，隐藏游戏内容 */
 @media (orientation: portrait) {
-  #orientationWarning {
-    display: flex;
-  }
+	#orientationWarning {
+		display: flex;
+	}
 
-  .screen {
-    display: none !important;
-  }
+	.screen {
+		display: none !important;
+	}
 }
