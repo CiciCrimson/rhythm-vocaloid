@@ -6,17 +6,16 @@ interface MenuScreenProps {
 	onSelectSong: (songId: string) => void;
 }
 
-/** 主菜单 — 歌曲选择界面 */
+const BACKGROUND = "linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #16213e 100%)";
+
 const MenuScreen: FC<MenuScreenProps> = ({ onSelectSong }) => {
 	const [songs] = useState(getSongList);
 
 	return (
 		<div style={styles.container}>
-			{/* 游戏标题 */}
 			<h1 style={styles.title}>Rhythm VOCALOID</h1>
 			<p style={styles.subtitle}>节奏术力口</p>
 
-			{/* 歌曲卡片列表 */}
 			<div style={styles.grid}>
 				{songs.map((song) => (
 					<SongCard
@@ -36,7 +35,6 @@ const MenuScreen: FC<MenuScreenProps> = ({ onSelectSong }) => {
 	);
 };
 
-/** 单张歌曲卡片 */
 const SongCard: FC<{ song: SongMeta; onClick: () => void }> = ({
 	song,
 	onClick,
@@ -53,7 +51,6 @@ const SongCard: FC<{ song: SongMeta; onClick: () => void }> = ({
 			}}
 			disabled={false}
 		>
-			{/* 占位封面 */}
 			<div style={styles.coverPlaceholder}>
 				{locked ? "🔒" : "🎵"}
 			</div>
@@ -79,7 +76,7 @@ const styles: Record<string, React.CSSProperties> = {
 	container: {
 		width: "100%",
 		minHeight: "100vh",
-		background: "linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #16213e 100%)",
+		background: BACKGROUND,
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "center",

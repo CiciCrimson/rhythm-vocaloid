@@ -7,22 +7,18 @@ import type { GameScreen as GameScreenState, GameStats, NoteConfig } from "./typ
 
 export default function App() {
 	const [screen, setScreen] = useState<GameScreenState>("menu");
-
-	// 游戏数据
 	const [selectedSongId, setSelectedSongId] = useState<string | null>(null);
 	const [notes, setNotes] = useState<NoteConfig[]>([]);
 	const [audioSrc, setAudioSrc] = useState("");
 	const [gameStats, setGameStats] = useState<GameStats | null>(null);
 	const [loading, setLoading] = useState(false);
 
-	// 菜单 → 选歌 → 加载谱面 → 进入游戏
 	const handleSelectSong = useCallback(async (songId: string) => {
 		setLoading(true);
 		try {
 			const config = await loadSongConfig(songId);
 			setSelectedSongId(songId);
 			setNotes(config.notes);
-			// 修正音频路径：Vite 静态资源从 public 根目录提供
 			const fixedSrc = config.audioSrc.startsWith("/")
 				? config.audioSrc
 				: `/${config.audioSrc}`;
@@ -35,13 +31,11 @@ export default function App() {
 		}
 	}, []);
 
-	// 游戏结束 → 结算
 	const handleGameEnd = useCallback((stats: GameStats) => {
 		setGameStats(stats);
 		setScreen("results");
 	}, []);
 
-	// 结算 → 菜单
 	const handleBackToMenu = useCallback(() => {
 		setScreen("menu");
 		setSelectedSongId(null);
@@ -50,7 +44,6 @@ export default function App() {
 		setGameStats(null);
 	}, []);
 
-	// 游戏中退出 → 菜单
 	const handleQuit = useCallback(() => {
 		setScreen("menu");
 	}, []);

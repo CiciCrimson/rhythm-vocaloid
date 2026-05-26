@@ -1,6 +1,5 @@
 import type { SongConfig, SongMeta } from "../types";
 
-// 歌曲注册表 — 对应 public/config 下的谱面文件
 const SONG_REGISTRY: SongMeta[] = [
 	{
 		songId: "levan_polkka",
@@ -28,14 +27,12 @@ const SONG_REGISTRY: SongMeta[] = [
 	},
 ];
 
-// 谱面缓存，避免重复请求
 const configCache = new Map<string, SongConfig>();
 
-/** 加载谱面 JSON 配置 */
 export async function loadSongConfig(songId: string): Promise<SongConfig> {
-	if (configCache.has(songId)) {
-		return configCache.get(songId) as SongConfig;
-	}
+	const cached = configCache.get(songId);
+	if (cached) return cached;
+
 	const response = await fetch(`/config/${songId}.json`);
 	if (!response.ok) {
 		throw new Error(`Failed to load song config: ${songId}`);
@@ -45,12 +42,10 @@ export async function loadSongConfig(songId: string): Promise<SongConfig> {
 	return config;
 }
 
-/** 获取所有歌曲元数据列表 */
 export function getSongList(): SongMeta[] {
 	return SONG_REGISTRY;
 }
 
-/** 按 songId 查找歌曲元数据 */
 export function getSongMeta(songId: string): SongMeta | undefined {
 	return SONG_REGISTRY.find((s) => s.songId === songId);
 }

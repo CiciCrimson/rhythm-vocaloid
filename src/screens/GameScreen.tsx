@@ -13,7 +13,6 @@ interface GameScreenProps {
 	onGameEnd: (stats: GameStats) => void;
 }
 
-/** 游戏核心界面 — 协调 Pixi 画布与 React HUD 叠加层 */
 const GameScreen: FC<GameScreenProps> = ({
 	notes,
 	audioSrc,
@@ -22,18 +21,15 @@ const GameScreen: FC<GameScreenProps> = ({
 }) => {
 	const canvasRef = useRef<GameCanvasHandle>(null);
 
-	// React 持有的 UI 状态（由 GameCanvas 回调驱动）
 	const [score, setScore] = useState(0);
 	const [combo, setCombo] = useState(0);
 	const [paused, setPaused] = useState(false);
 	const [judgmentEvent, setJudgmentEvent] = useState<JudgmentEvent | null>(null);
 
-	// 判定回调 → 显示反馈文字
 	const handleJudgment = useCallback((event: JudgmentEvent) => {
 		setJudgmentEvent(event);
 	}, []);
 
-	// 分数 & Combo 实时更新
 	const handleScoreUpdate = useCallback((newScore: number) => {
 		setScore(newScore);
 	}, []);
@@ -42,7 +38,6 @@ const GameScreen: FC<GameScreenProps> = ({
 		setCombo(newCombo);
 	}, []);
 
-	// 游戏结束回调
 	const handleGameEnd = useCallback(
 		(stats: GameStats) => {
 			onGameEnd(stats);
@@ -50,7 +45,6 @@ const GameScreen: FC<GameScreenProps> = ({
 		[onGameEnd],
 	);
 
-	// 暂停 / 继续
 	const handlePause = useCallback(() => {
 		setPaused(true);
 		canvasRef.current?.pause();
@@ -68,7 +62,6 @@ const GameScreen: FC<GameScreenProps> = ({
 
 	return (
 		<div style={styles.wrapper}>
-			{/* Pixi 画布（底层） */}
 			<div style={styles.canvasLayer}>
 				<GameCanvas
 					ref={canvasRef}
@@ -81,7 +74,6 @@ const GameScreen: FC<GameScreenProps> = ({
 				/>
 			</div>
 
-			{/* React HUD 叠加层 */}
 			<HUD
 				score={score}
 				combo={combo}
@@ -89,10 +81,8 @@ const GameScreen: FC<GameScreenProps> = ({
 				visible={!paused}
 			/>
 
-			{/* 判定反馈文字 */}
 			<JudgmentText event={judgmentEvent} />
 
-			{/* 暂停覆盖层 */}
 			{paused && <PauseOverlay onResume={handleResume} onQuit={handleQuit} />}
 		</div>
 	);

@@ -7,13 +7,11 @@ interface HUDProps {
 	visible: boolean;
 }
 
-/** 分数、Combo、暂停按钮的 React 覆盖层 */
 const HUD: FC<HUDProps> = memo(({ score, combo, onPause, visible }) => {
 	if (!visible) return null;
 
 	return (
 		<div style={styles.container}>
-			{/* 暂停按钮 — 左上角 */}
 			<button
 				type="button"
 				onClick={onPause}
@@ -23,7 +21,6 @@ const HUD: FC<HUDProps> = memo(({ score, combo, onPause, visible }) => {
 				⏸
 			</button>
 
-			{/* 分数显示 — 右上角 */}
 			<div style={styles.scoreSection}>
 				<div style={styles.score}>{String(score).padStart(8, "0")}</div>
 				{combo >= 2 && <div style={styles.combo}>{combo} combo</div>}

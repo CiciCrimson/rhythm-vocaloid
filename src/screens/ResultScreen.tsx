@@ -6,7 +6,8 @@ interface ResultScreenProps {
 	onBackToMenu: () => void;
 }
 
-/** 结算界面 — 展示本局成绩 */
+const BACKGROUND = "linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #16213e 100%)";
+
 const ResultScreen: FC<ResultScreenProps> = ({ stats, onBackToMenu }) => {
 	const totalNotes =
 		stats.perfect + stats.great + stats.good + stats.miss;
@@ -15,22 +16,18 @@ const ResultScreen: FC<ResultScreenProps> = ({ stats, onBackToMenu }) => {
 	return (
 		<div style={styles.container}>
 			<div style={styles.card}>
-				{/* 评级 */}
 				<div style={styles.grade}>{grade}</div>
 
-				{/* 分数 */}
 				<div style={styles.scoreLabel}>最终得分</div>
 				<div style={styles.score}>
 					{String(stats.score).padStart(8, "0")}
 				</div>
 
-				{/* 最高连击 */}
 				<div style={styles.statRow}>
 					<span style={styles.statLabel}>Max Combo</span>
 					<span style={styles.statValue}>{stats.maxCombo}</span>
 				</div>
 
-				{/* 判定详细 */}
 				<div style={styles.divider} />
 				<div style={styles.judgmentGrid}>
 					<JudgmentItem label="PERFECT" count={stats.perfect} color="#FFD700" />
@@ -39,7 +36,6 @@ const ResultScreen: FC<ResultScreenProps> = ({ stats, onBackToMenu }) => {
 					<JudgmentItem label="MISS" count={stats.miss} color="#FF4444" />
 				</div>
 
-				{/* 返回按钮 */}
 				<button type="button" style={styles.backBtn} onClick={onBackToMenu}>
 					返回主菜单
 				</button>
@@ -59,7 +55,6 @@ const JudgmentItem: FC<{
 	</div>
 );
 
-/** 根据完美率计算评级 */
 function getGrade(stats: GameStats, total: number): string {
 	if (total === 0) return "—";
 	const perfectRate = stats.perfect / total;
@@ -74,7 +69,7 @@ const styles: Record<string, React.CSSProperties> = {
 	container: {
 		width: "100%",
 		minHeight: "100vh",
-		background: "linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #16213e 100%)",
+		background: BACKGROUND,
 		display: "flex",
 		alignItems: "center",
 		justifyContent: "center",

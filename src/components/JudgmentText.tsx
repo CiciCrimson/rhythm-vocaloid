@@ -14,7 +14,6 @@ interface FloatingItem {
 	y: number;
 }
 
-/** 浮动判定反馈文字 — 在判定线上方闪现并淡出 */
 const JudgmentText: FC<JudgmentTextProps> = ({ event }) => {
 	const [items, setItems] = useState<FloatingItem[]>([]);
 
@@ -29,7 +28,6 @@ const JudgmentText: FC<JudgmentTextProps> = ({ event }) => {
 		};
 		setItems((prev) => [...prev, item]);
 
-		// 1 秒后自动移除
 		const timer = setTimeout(() => {
 			setItems((prev) => prev.filter((i) => i.id !== item.id));
 		}, 1000);
@@ -84,7 +82,6 @@ const judgmentKeyframes = `
 }
 `;
 
-// Re-export type for use in parent
 export type { JudgmentEvent, JudgmentLevel };
 
 export default JudgmentText;

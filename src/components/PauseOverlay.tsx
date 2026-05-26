@@ -5,7 +5,6 @@ interface PauseOverlayProps {
 	onQuit: () => void;
 }
 
-/** 暂停覆盖层 */
 const PauseOverlay: FC<PauseOverlayProps> = ({ onResume, onQuit }) => {
 	return (
 		<div style={styles.backdrop}>
