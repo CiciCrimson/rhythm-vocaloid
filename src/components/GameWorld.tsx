@@ -55,21 +55,21 @@ const GameWorld = forwardRef<GameCanvasHandle, GameCanvasProps>(
 			async function init() {
 				const container = await waitForContainer(containerRef, disposed);
 				if (disposed || !container) return;
-				state.worldContainer = container;
+				state.assets.container = container;
 
-				const charRunTex = await loadTextures(state, disposed);
+				const charRunTex = await loadTextures(state.assets, disposed);
 				if (!charRunTex) return;
 
 				await waitForScreen(app, disposed);
 				if (disposed) return;
 
-				buildScene(app, container, state, charRunTex);
-				state.ready = true;
+				buildScene(app, container, state.assets, charRunTex);
+				state.lifecycle.ready = true;
 
-				if (notes.length > 0 && !state.running) {
+				if (notes.length > 0 && !state.lifecycle.running) {
 					resetState(state, notes);
 					startAudio(state, audioSrc);
-					state.running = true;
+					state.lifecycle.running = true;
 					onScoreUpdateRef.current(0);
 					onComboUpdateRef.current(0);
 				}
@@ -86,14 +86,14 @@ const GameWorld = forwardRef<GameCanvasHandle, GameCanvasProps>(
 
 			return () => {
 				disposed = true;
-				if (state.jumpTimeout) clearTimeout(state.jumpTimeout);
+				if (state.assets.jumpTimeout) clearTimeout(state.assets.jumpTimeout);
 				canvas.removeEventListener("pointerdown", onPointerDown);
 			};
 		}, [app, audioSrc, notes, onComboUpdateRef, onJudgmentRef, onScoreUpdateRef]);
 
 		useTick(() => {
 			const state = gameState.current;
-			if (!state.running || state.paused || !state.ready) return;
+			if (!state.lifecycle.running || state.lifecycle.paused || !state.lifecycle.ready) return;
 
 			spawnNotes(state, app);
 			updateNotePositions(state, app);
@@ -106,19 +106,19 @@ const GameWorld = forwardRef<GameCanvasHandle, GameCanvasProps>(
 				const state = gameState.current;
 				resetState(state, newNotes);
 				startAudio(state, newAudioSrc);
-				state.running = true;
+				state.lifecycle.running = true;
 				onScoreUpdateRef.current(0);
 				onComboUpdateRef.current(0);
 			},
 			pause() {
 				const state = gameState.current;
-				state.paused = true;
+				state.lifecycle.paused = true;
 				state.pauseTimestamp = performance.now();
 				state.audio?.pause();
 			},
 			resume() {
 				const state = gameState.current;
-				state.paused = false;
+				state.lifecycle.paused = false;
 				state.startTimestamp += performance.now() - state.pauseTimestamp;
 				state.audio?.play().catch(() => {});
 			},

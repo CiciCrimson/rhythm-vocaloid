@@ -1,26 +1,17 @@
 import type { Container, Sprite, Texture } from "pixi.js";
 import type { NoteConfig } from "../types";
 
-export interface RuntimeNote {
-	sprite: Sprite;
-	configTime: number;
-}
+// ========== 生命周期 ==========
 
-export interface GameState {
+export interface LifecycleState {
 	running: boolean;
 	paused: boolean;
 	ready: boolean;
-	noteConfigs: NoteConfig[];
-	activeNotes: Map<number, RuntimeNote>;
-	nextNoteIndex: number;
-	noteTexture: Texture;
-	charRunTexture: Texture;
-	charJumpTexture: Texture;
-	charSprite: Sprite | null;
-	jumpTimeout: ReturnType<typeof setTimeout> | null;
-	audio: HTMLAudioElement | null;
-	startTimestamp: number;
-	pauseTimestamp: number;
+}
+
+// ========== 计分统计 ==========
+
+export interface ScoringState {
 	score: number;
 	combo: number;
 	maxCombo: number;
@@ -28,5 +19,43 @@ export interface GameState {
 	great: number;
 	good: number;
 	miss: number;
-	worldContainer: Container | null;
+}
+
+// ========== 音符系统 ==========
+
+export interface RuntimeNote {
+	id: number;
+	sprite: Sprite;
+	configTime: number;
+}
+
+export interface NotesState {
+	configs: NoteConfig[];
+	active: Map<number, RuntimeNote>;
+	nextIndex: number;
+	nextId: number;
+}
+
+// ========== 渲染资源 ==========
+
+export interface SceneAssets {
+	container: Container | null;
+	noteTexture: Texture;
+	charRunTexture: Texture;
+	charJumpTexture: Texture;
+	charSprite: Sprite | null;
+	jumpTimeout: ReturnType<typeof setTimeout> | null;
+}
+
+// ========== 组合根 ==========
+
+export interface GameState {
+	lifecycle: LifecycleState;
+	scoring: ScoringState;
+	notes: NotesState;
+	assets: SceneAssets;
+	// 时间/音频 — 任务 #2 会重构此处
+	audio: HTMLAudioElement | null;
+	startTimestamp: number;
+	pauseTimestamp: number;
 }

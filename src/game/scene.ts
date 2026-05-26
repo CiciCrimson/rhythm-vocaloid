@@ -2,7 +2,7 @@ import type { RefObject } from "react";
 import { type Application, Assets, type Container, Graphics, Sprite, type Texture } from "pixi.js";
 import { CHAR_SCALE, CHAR_X_RATIO, JUDGMENT_LINE_RATIO } from "./constants";
 import { makeFallbackTexture } from "./graphics";
-import type { GameState } from "./types";
+import type { SceneAssets } from "./types";
 
 export async function waitForContainer(
 	containerRef: RefObject<Container | null>,
@@ -26,7 +26,7 @@ export async function waitForScreen(app: Application, disposed: boolean) {
 	}
 }
 
-export async function loadTextures(state: GameState, disposed: boolean) {
+export async function loadTextures(assets: SceneAssets, disposed: boolean) {
 	let noteTex: Texture;
 	let charRunTex: Texture;
 	let charJumpTex: Texture;
@@ -42,16 +42,16 @@ export async function loadTextures(state: GameState, disposed: boolean) {
 		charJumpTex = makeFallbackTexture(0xff69b4, 128);
 	}
 	if (disposed) return null;
-	state.noteTexture = noteTex;
-	state.charRunTexture = charRunTex;
-	state.charJumpTexture = charJumpTex;
+	assets.noteTexture = noteTex;
+	assets.charRunTexture = charRunTex;
+	assets.charJumpTexture = charJumpTex;
 	return charRunTex;
 }
 
 export function buildScene(
 	app: Application,
 	container: Container,
-	state: GameState,
+	assets: SceneAssets,
 	charRunTex: Texture,
 ) {
 	const bg = new Graphics();
@@ -65,7 +65,7 @@ export function buildScene(
 	charSprite.y = app.screen.height / 2;
 	charSprite.scale.set(CHAR_SCALE);
 	container.addChild(charSprite);
-	state.charSprite = charSprite;
+	assets.charSprite = charSprite;
 
 	const jx = app.screen.width * JUDGMENT_LINE_RATIO;
 	const lineGfx = new Graphics();
