@@ -1,0 +1,12 @@
+{
+	"songId": "ordinary_disco",
+	"title": "普通 DISCO",
+	"artist": "洛天依 / 言和",
+	"bpm": 128,
+	"audioSrc": "assets/audio/ordinary_disco.mp3",
+	"offset": 0,
+	"duration": 105,
+	"notes": [],
+	"backgroundShiftPoints": [],
+	"characterSwitchPoints": []
+}

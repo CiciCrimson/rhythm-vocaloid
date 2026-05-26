@@ -1,0 +1,12 @@
+{
+	"songId": "igaku",
+	"title": "医学",
+	"artist": "重音 Teto",
+	"bpm": 160,
+	"audioSrc": "assets/audio/igaku.mp3",
+	"offset": 0,
+	"duration": 90,
+	"notes": [],
+	"backgroundShiftPoints": [],
+	"characterSwitchPoints": []
+}
