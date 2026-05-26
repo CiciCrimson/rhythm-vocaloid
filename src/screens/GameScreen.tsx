@@ -13,12 +13,7 @@ interface GameScreenProps {
 	onGameEnd: (stats: GameStats) => void;
 }
 
-const GameScreen: FC<GameScreenProps> = ({
-	notes,
-	audioSrc,
-	onQuit,
-	onGameEnd,
-}) => {
+const GameScreen: FC<GameScreenProps> = ({ notes, audioSrc, onQuit, onGameEnd }) => {
 	const canvasRef = useRef<GameCanvasHandle>(null);
 
 	const [score, setScore] = useState(0);
@@ -42,7 +37,7 @@ const GameScreen: FC<GameScreenProps> = ({
 		(stats: GameStats) => {
 			onGameEnd(stats);
 		},
-		[onGameEnd],
+		[onGameEnd]
 	);
 
 	const handlePause = useCallback(() => {
@@ -74,12 +69,7 @@ const GameScreen: FC<GameScreenProps> = ({
 				/>
 			</div>
 
-			<HUD
-				score={score}
-				combo={combo}
-				onPause={handlePause}
-				visible={!paused}
-			/>
+			<HUD score={score} combo={combo} onPause={handlePause} visible={!paused} />
 
 			<JudgmentText event={judgmentEvent} />
 

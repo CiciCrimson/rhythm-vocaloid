@@ -35,10 +35,7 @@ const MenuScreen: FC<MenuScreenProps> = ({ onSelectSong }) => {
 	);
 };
 
-const SongCard: FC<{ song: SongMeta; onClick: () => void }> = ({
-	song,
-	onClick,
-}) => {
+const SongCard: FC<{ song: SongMeta; onClick: () => void }> = ({ song, onClick }) => {
 	const locked = !song.unlocked;
 	return (
 		<button
@@ -51,9 +48,7 @@ const SongCard: FC<{ song: SongMeta; onClick: () => void }> = ({
 			}}
 			disabled={false}
 		>
-			<div style={styles.coverPlaceholder}>
-				{locked ? "🔒" : "🎵"}
-			</div>
+			<div style={styles.coverPlaceholder}>{locked ? "🔒" : "🎵"}</div>
 			<div style={styles.cardBody}>
 				<div style={styles.songTitle}>{song.title}</div>
 				<div style={styles.songArtist}>{song.artist}</div>

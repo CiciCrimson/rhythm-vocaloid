@@ -8,6 +8,7 @@ import {
 	NOTE_SCALE,
 } from "./constants";
 import { JUDGMENT_SCORES, judgeNote } from "./judgment";
+import { getGameTime } from "./timing";
 import type {
 	GameState,
 	LifecycleState,
@@ -17,8 +18,6 @@ import type {
 	SceneAssets,
 } from "./types";
 import type { GameStats, JudgmentEvent, JudgmentLevel, NoteConfig } from "../types";
-
-// ========== 工厂函数 ==========
 
 function createLifecycle(): LifecycleState {
 	return { running: false, paused: false, ready: false };
@@ -40,6 +39,8 @@ function createSceneAssets(): SceneAssets {
 		charJumpTexture: Texture.EMPTY,
 		charSprite: null,
 		jumpTimeout: null,
+		bgGraphics: null,
+		lineGraphics: null,
 	};
 }
 
@@ -49,26 +50,15 @@ export function createInitialState(): GameState {
 		scoring: createScoring(),
 		notes: createNotesState(),
 		assets: createSceneAssets(),
-		audio: null,
-		startTimestamp: 0,
-		pauseTimestamp: 0,
+		timing: {
+			audioCtx: null,
+			sourceNode: null,
+			audioBuffer: null,
+			audioStartTime: 0,
+			pauseElapsed: 0,
+		},
 	};
 }
-
-// ========== 时间 ==========
-
-export function getGameTime(state: GameState): number {
-	if (state.lifecycle.paused) {
-		return (state.pauseTimestamp - state.startTimestamp) / 1000;
-	}
-	const audio = state.audio;
-	if (audio && !audio.paused && audio.readyState >= 2 && audio.duration > 0) {
-		state.startTimestamp = performance.now() - audio.currentTime * 1000;
-	}
-	return (performance.now() - state.startTimestamp) / 1000;
-}
-
-// ========== 音符销毁 ==========
 
 export function destroyNote(note: RuntimeNote) {
 	if (note.sprite.parent) {
@@ -76,8 +66,6 @@ export function destroyNote(note: RuntimeNote) {
 	}
 	note.sprite.destroy();
 }
-
-// ========== 重置 ==========
 
 export function resetState(state: GameState, configs: NoteConfig[]) {
 	const { assets, notes } = state;
@@ -108,24 +96,8 @@ export function resetState(state: GameState, configs: NoteConfig[]) {
 	scoring.miss = 0;
 
 	state.lifecycle.paused = false;
-	state.startTimestamp = performance.now();
+	state.timing.pauseElapsed = 0;
 }
-
-// ========== 音频 ==========
-
-export function startAudio(state: GameState, audioSrc: string) {
-	if (state.audio) {
-		state.audio.pause();
-		state.audio = null;
-	}
-	if (audioSrc) {
-		const audio = new Audio(audioSrc);
-		audio.play().catch(() => {});
-		state.audio = audio;
-	}
-}
-
-// ========== 判定 ==========
 
 export function applyJudgment(
 	scoring: ScoringState,
@@ -133,7 +105,7 @@ export function applyJudgment(
 	app: Application,
 	onJudgmentRef: RefObject<(event: JudgmentEvent) => void>,
 	onScoreUpdateRef: RefObject<(score: number) => void>,
-	onComboUpdateRef: RefObject<(combo: number) => void>,
+	onComboUpdateRef: RefObject<(combo: number) => void>
 ) {
 	const jx = app.screen.width * JUDGMENT_LINE_RATIO;
 	const ny = app.screen.height / 2;
@@ -169,10 +141,8 @@ export function applyJudgment(
 	onComboUpdateRef.current(scoring.combo);
 }
 
-// ========== 音符生成 ==========
-
 export function spawnNotes(state: GameState, app: Application) {
-	const gameTime = getGameTime(state);
+	const gameTime = getGameTime(state.timing);
 	const ny = app.screen.height / 2;
 	const { notes, assets } = state;
 	const container = assets.container;
@@ -196,10 +166,8 @@ export function spawnNotes(state: GameState, app: Application) {
 	}
 }
 
-// ========== 音符位置更新 ==========
-
 export function updateNotePositions(state: GameState, app: Application) {
-	const gameTime = getGameTime(state);
+	const gameTime = getGameTime(state.timing);
 	const jx = app.screen.width * JUDGMENT_LINE_RATIO;
 	const totalDist = app.screen.width - jx;
 
@@ -210,16 +178,14 @@ export function updateNotePositions(state: GameState, app: Application) {
 	}
 }
 
-// ========== 自动 MISS ==========
-
 export function checkAutoMiss(
 	state: GameState,
 	app: Application,
 	onJudgmentRef: RefObject<(event: JudgmentEvent) => void>,
 	onScoreUpdateRef: RefObject<(score: number) => void>,
-	onComboUpdateRef: RefObject<(combo: number) => void>,
+	onComboUpdateRef: RefObject<(combo: number) => void>
 ) {
-	const gameTime = getGameTime(state);
+	const gameTime = getGameTime(state.timing);
 	const { notes, scoring } = state;
 	for (const [key, note] of notes.active) {
 		if (gameTime - note.configTime > MISS_WINDOW) {
@@ -230,28 +196,21 @@ export function checkAutoMiss(
 	}
 }
 
-// ========== 游戏结束 ==========
-
 export function checkGameEnd(
 	state: GameState,
-	onGameEndRef: RefObject<(stats: GameStats) => void>,
+	onGameEndRef: RefObject<(stats: GameStats) => void>
 ) {
 	const { lifecycle, notes, scoring } = state;
 	const allSpawned = notes.nextIndex >= notes.configs.length;
 	const allJudged = notes.active.size === 0;
 	if (!allSpawned || !allJudged) return;
 
-	const audio = state.audio;
-	const audioDone =
-		!audio ||
-		audio.ended ||
-		(audio.paused && audio.currentTime > 0.5) ||
-		audio.currentTime >= (audio.duration || 0) - 0.1;
-
-	if (!audioDone && audio && notes.configs.length > 0) return;
+	// 无音频或音频已播放完毕
+	if (notes.configs.length > 0 && state.timing.audioBuffer && !isAudioDoneInternal(state)) {
+		return;
+	}
 
 	lifecycle.running = false;
-	audio?.pause();
 	onGameEndRef.current({
 		score: scoring.score,
 		maxCombo: scoring.maxCombo,
@@ -262,7 +221,12 @@ export function checkGameEnd(
 	});
 }
 
-// ========== 输入处理 ==========
+function isAudioDoneInternal(state: GameState): boolean {
+	const buf = state.timing.audioBuffer;
+	if (!buf) return true;
+	const gt = getGameTime(state.timing);
+	return gt >= buf.duration;
+}
 
 function findBestNote(notes: NotesState, gameTime: number): RuntimeNote | null {
 	let bestNote: RuntimeNote | null = null;
@@ -282,7 +246,7 @@ export function handleInput(
 	app: Application,
 	onJudgmentRef: RefObject<(event: JudgmentEvent) => void>,
 	onScoreUpdateRef: RefObject<(score: number) => void>,
-	onComboUpdateRef: RefObject<(combo: number) => void>,
+	onComboUpdateRef: RefObject<(combo: number) => void>
 ) {
 	if (!state.lifecycle.running || state.lifecycle.paused) return;
 
@@ -297,7 +261,7 @@ export function handleInput(
 		}, JUMP_DURATION);
 	}
 
-	const gameTime = getGameTime(state);
+	const gameTime = getGameTime(state.timing);
 	const bestNote = findBestNote(notes, gameTime);
 	if (!bestNote) return;
 

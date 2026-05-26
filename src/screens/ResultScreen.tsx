@@ -9,8 +9,7 @@ interface ResultScreenProps {
 const BACKGROUND = "linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #16213e 100%)";
 
 const ResultScreen: FC<ResultScreenProps> = ({ stats, onBackToMenu }) => {
-	const totalNotes =
-		stats.perfect + stats.great + stats.good + stats.miss;
+	const totalNotes = stats.perfect + stats.great + stats.good + stats.miss;
 	const grade = getGrade(stats, totalNotes);
 
 	return (
@@ -19,9 +18,7 @@ const ResultScreen: FC<ResultScreenProps> = ({ stats, onBackToMenu }) => {
 				<div style={styles.grade}>{grade}</div>
 
 				<div style={styles.scoreLabel}>最终得分</div>
-				<div style={styles.score}>
-					{String(stats.score).padStart(8, "0")}
-				</div>
+				<div style={styles.score}>{String(stats.score).padStart(8, "0")}</div>
 
 				<div style={styles.statRow}>
 					<span style={styles.statLabel}>Max Combo</span>

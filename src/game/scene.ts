@@ -6,7 +6,7 @@ import type { SceneAssets } from "./types";
 
 export async function waitForContainer(
 	containerRef: RefObject<Container | null>,
-	disposed: boolean,
+	disposed: boolean
 ) {
 	let container = containerRef.current;
 	if (container) return container;
@@ -48,16 +48,53 @@ export async function loadTextures(assets: SceneAssets, disposed: boolean) {
 	return charRunTex;
 }
 
+/** 绘制背景矩形 */
+function drawBackground(bg: Graphics, width: number, height: number) {
+	bg.clear();
+	bg.rect(0, 0, width, height);
+	bg.fill({ color: 0x1a1a2e });
+}
+
+/** 绘制判定线虚线 */
+function drawJudgeLine(line: Graphics, jx: number, height: number) {
+	const dashLen = 12;
+	const gapLen = 8;
+	line.clear();
+	for (let yy = 0; yy < height; yy += dashLen + gapLen) {
+		line.moveTo(jx, yy)
+			.lineTo(jx, Math.min(yy + dashLen, height))
+			.stroke({ width: 2, color: 0xffffff, alpha: 0.4 });
+	}
+}
+
+/** 根据当前画布尺寸定位所有静态场景元素 */
+export function layoutScene(app: Application, assets: SceneAssets) {
+	const w = app.screen.width;
+	const h = app.screen.height;
+	const jx = w * JUDGMENT_LINE_RATIO;
+
+	if (assets.bgGraphics) {
+		drawBackground(assets.bgGraphics, w, h);
+	}
+	if (assets.charSprite) {
+		assets.charSprite.x = w * CHAR_X_RATIO;
+		assets.charSprite.y = h / 2;
+	}
+	if (assets.lineGraphics) {
+		drawJudgeLine(assets.lineGraphics, jx, h);
+	}
+}
+
 export function buildScene(
 	app: Application,
 	container: Container,
 	assets: SceneAssets,
-	charRunTex: Texture,
+	charRunTex: Texture
 ) {
 	const bg = new Graphics();
-	bg.rect(0, 0, app.screen.width, app.screen.height);
-	bg.fill({ color: 0x1a1a2e });
+	drawBackground(bg, app.screen.width, app.screen.height);
 	container.addChild(bg);
+	assets.bgGraphics = bg;
 
 	const charSprite = new Sprite(charRunTex);
 	charSprite.anchor.set(0.5);
@@ -67,15 +104,8 @@ export function buildScene(
 	container.addChild(charSprite);
 	assets.charSprite = charSprite;
 
-	const jx = app.screen.width * JUDGMENT_LINE_RATIO;
 	const lineGfx = new Graphics();
-	const dashLen = 12;
-	const gapLen = 8;
-	for (let yy = 0; yy < app.screen.height; yy += dashLen + gapLen) {
-		lineGfx
-			.moveTo(jx, yy)
-			.lineTo(jx, Math.min(yy + dashLen, app.screen.height))
-			.stroke({ width: 2, color: 0xffffff, alpha: 0.4 });
-	}
+	drawJudgeLine(lineGfx, app.screen.width * JUDGMENT_LINE_RATIO, app.screen.height);
 	container.addChild(lineGfx);
+	assets.lineGraphics = lineGfx;
 }

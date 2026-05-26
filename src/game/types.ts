@@ -1,15 +1,11 @@
-import type { Container, Sprite, Texture } from "pixi.js";
+import type { Container, Graphics, Sprite, Texture } from "pixi.js";
 import type { NoteConfig } from "../types";
-
-// ========== 生命周期 ==========
 
 export interface LifecycleState {
 	running: boolean;
 	paused: boolean;
 	ready: boolean;
 }
-
-// ========== 计分统计 ==========
 
 export interface ScoringState {
 	score: number;
@@ -20,8 +16,6 @@ export interface ScoringState {
 	good: number;
 	miss: number;
 }
-
-// ========== 音符系统 ==========
 
 export interface RuntimeNote {
 	id: number;
@@ -36,8 +30,6 @@ export interface NotesState {
 	nextId: number;
 }
 
-// ========== 渲染资源 ==========
-
 export interface SceneAssets {
 	container: Container | null;
 	noteTexture: Texture;
@@ -45,17 +37,25 @@ export interface SceneAssets {
 	charJumpTexture: Texture;
 	charSprite: Sprite | null;
 	jumpTimeout: ReturnType<typeof setTimeout> | null;
+	bgGraphics: Graphics | null;
+	lineGraphics: Graphics | null;
 }
 
-// ========== 组合根 ==========
+export interface TimingState {
+	audioCtx: AudioContext | null;
+	sourceNode: AudioBufferSourceNode | null;
+	/** 已解码的音频数据，可反复创建 sourceNode */
+	audioBuffer: AudioBuffer | null;
+	/** audioCtx.currentTime 值，播放启动瞬间 */
+	audioStartTime: number;
+	/** 暂停时刻已流逝的游戏时间（秒） */
+	pauseElapsed: number;
+}
 
 export interface GameState {
 	lifecycle: LifecycleState;
 	scoring: ScoringState;
 	notes: NotesState;
 	assets: SceneAssets;
-	// 时间/音频 — 任务 #2 会重构此处
-	audio: HTMLAudioElement | null;
-	startTimestamp: number;
-	pauseTimestamp: number;
+	timing: TimingState;
 }

@@ -85,8 +85,6 @@ export default function App() {
 			);
 		case "results":
 			if (!gameStats) return null;
-			return (
-				<ResultScreen stats={gameStats} onBackToMenu={handleBackToMenu} />
-			);
+			return <ResultScreen stats={gameStats} onBackToMenu={handleBackToMenu} />;
 	}
 }

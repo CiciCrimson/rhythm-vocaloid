@@ -12,12 +12,7 @@ const HUD: FC<HUDProps> = memo(({ score, combo, onPause, visible }) => {
 
 	return (
 		<div style={styles.container}>
-			<button
-				type="button"
-				onClick={onPause}
-				style={styles.pauseBtn}
-				aria-label="暂停"
-			>
+			<button type="button" onClick={onPause} style={styles.pauseBtn} aria-label="暂停">
 				⏸
 			</button>
 
